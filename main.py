@@ -1,0 +1,51 @@
+from fastapi import FastAPI
+from fastapi.responses import HTMLResponse
+from pydantic import BaseModel
+import sqlite3
+
+# 1. Initialize SQLite database connection
+connect = sqlite3.connect("u.DB", check_same_thread=False)
+cursor = connect.cursor()
+cursor.execute('''CREATE TABLE IF NOT EXISTS price (
+    profit REAL
+)''')
+connect.commit()
+
+# 2. Initialize FastAPI engine
+app = FastAPI()
+
+# Catch BOTH the root and the explicit file request
+@app.get("/", response_class=HTMLResponse)
+@app.get("/index.html", response_class=HTMLResponse)
+def read_root():
+    try:
+        with open("index.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        return "<h3>ERROR: index.html not found in the AI_Startup folder!</h3>"
+
+# 3. Pydantic validation contract
+class AuctionItem(BaseModel):
+    answer: str
+
+# 4. Serve the HTML interface directly at the root address (http://127.0.0.1:5500/)
+@app.get("/", response_class=HTMLResponse)
+def read_root():
+    try:
+        with open("index.html", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        return "<h3>ERROR: index.html not found in the AI_Startup folder!</h3>"
+
+# 5. The API processing endpoint
+@app.post("/api/evaluate-bid")
+def evaluate_bid(data: AuctionItem):
+    solution = eval(data.answer)
+    
+    cursor.execute("INSERT INTO price VALUES (?)", (solution,))
+    connect.commit()
+    return {
+        "status": "success",
+        "solution": solution
+    }
+    #python -m uvicorn main:app --reload --port 5500

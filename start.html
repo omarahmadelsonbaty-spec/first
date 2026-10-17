@@ -1,0 +1,96 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>My First Tool</title>
+    <style>
+        body {
+            background-color: #121212;
+            color: #ffffff;
+            font-family: Arial, sans-serif;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+
+        #main-container {
+            background-color: #1e1e1e;
+            padding: 20px;
+            border-radius: 8px;
+            width: 350px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+        }
+
+        input, button {
+            padding: 10px;
+            border-radius: 4px;
+            border: 1px solid #333;
+        }
+
+        button {
+            background-color: #2563eb;
+            color: white;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #1d4ed8;
+        }
+
+        #output-box {
+            background-color: #2a2a2a;
+            padding: 10px;
+            border-radius: 4px;
+            min-height: 50px;
+        }
+    </style>
+</head>
+<body>
+
+    <div id="main-container">
+        <h2 style="margin: 0;">Data Terminal</h2>
+        <p style="margin: 0;">Status: <span id="status" style="color: #ef4444;">Disconnected</span></p>
+
+        <input type="text" id="symbol-input" placeholder="Enter Symbol (e.g. AAPL)">
+        <button id="fetch-btn">Fetch Data</button>
+
+        <div id="output-box">
+            <p style="margin: 0; color: #888;">No data loaded...</p>
+        </div>
+    </div>
+
+    <script>
+        const fetchBtn = document.getElementById('fetch-btn');
+        const symbolInput = document.getElementById('symbol-input');
+        const statusText = document.getElementById('status');
+        const outputBox = document.getElementById('output-box');
+
+        fetchBtn.addEventListener('click', () => {
+            const symbol = symbolInput.value.toUpperCase();
+
+            if (!symbol) {
+                outputBox.innerHTML = "<p style='color:#ef4444; margin:0;'>Enter a symbol first.</p>";
+                return;
+            }
+
+            statusText.innerText = "Processing...";
+            statusText.style.color = "#f59e0b";
+
+            setTimeout(() => {
+                statusText.innerText = "Connected";
+                statusText.style.color = "#10b981";
+                
+                outputBox.innerHTML = `
+                    <p style="margin: 4px 0;"><strong>Symbol:</strong> ${symbol}</p>
+                    <p style="margin: 4px 0;"><strong>Price:</strong> $154.20</p>
+                    <p style="margin: 4px 0;"><strong>Volume:</strong> 1,240,500</p>
+                `;
+            }, 800);
+        });
+    </script>
+</body>
+</html>

@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>First project</title>
+    <style>
+        body { 
+            font-family: sans-serif; 
+            background: #0f172a; /* Dark, sharp background */
+            color: #e8ebee; 
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+        }
+        .card { 
+            background: #1e293b; /* Contrast card background so you can actually see it */
+            padding: 75px; /* Reasonable padding, not 500px */
+            border-radius: 32px; 
+            width: 100%;
+            max-width: 450px;
+            box-shadow: 0 10px 25px rgba(0,0,0,0.5);
+        }
+        h2 {
+            margin-top: 0;
+            font-size: 24px;
+        }
+        input { 
+            display: block; 
+            width: 100%; 
+            margin-bottom: 15px; 
+            padding: 12px; 
+            background: #0f172a; 
+            border: 1px solid #334155; 
+            color: white; 
+            border-radius: 4px; 
+            box-sizing: border-box; 
+            font-size: 16px;
+        }
+        button { 
+            background: #3b82f6; 
+            color: white; 
+            border: none; 
+            padding: 18px; 
+            width: 100%; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            font-weight: bold; 
+            font-size: 16px;
+        }
+        button:hover { background: #242799; }
+        #result { margin-top: 20px; font-family: monospace; font-size: 16px; }
+    </style>
+</head>
+<body>
+
+    <div class="card">
+        <h2>Deal Evaluator</h2>
+        <input type="text" id="itemName" placeholder="Math Expression">
+        <button onclick="submitDeal()">Evaluate</button>
+        
+        <div id="result"></div>
+    </div>
+
+    <script>
+        async function submitDeal() {
+            const answer = document.getElementById('itemName').value;
+
+            const payload = {
+                answer: answer,
+
+            };
+
+            const response = await fetch('http://127.0.0.1:5500/api/evaluate-bid', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(payload)
+            });
+
+            const data = await response.json();
+
+            document.getElementById('result').innerText = 
+                `Answer: ${data.solution}`;
+        }
+    </script>
+
+</body>
+</html>
