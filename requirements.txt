@@ -1,7 +1,6 @@
 fastapi
 uvicorn
 pydantic
-sqlite3
 yfinance
 pandas
 requests
