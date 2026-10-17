@@ -56,7 +56,7 @@
 <body>
 
     <div class="card">
-        <h2>Deal Evaluator</h2>
+        <h2>Calculater</h2>
         <input type="text" id="itemName" placeholder="Math Expression">
         <button onclick="submitDeal()">Evaluate</button>
         
@@ -64,27 +64,35 @@
     </div>
 
     <script>
-        async function submitDeal() {
-            const answer = document.getElementById('itemName').value;
+async function submitDeal() {
+    const inputVal = document.getElementById('your-input-id').value;
 
-            const payload = {
-                answer: answer,
+    try {
+        const response = await fetch('/api/evaluate-bid', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ answer: inputVal })
+        });
 
-            };
+        const data = await response.json();
 
-            const response = await fetch('/api/evaluate-bid', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(payload)
-            });
+        if (data.status === "error") {
+            alert("Error: " + data.detail);
+        } else {
+            // Display both raw and rounded values in your UI
+            console.log("Raw Value:", data.raw);
+            console.log("Rounded Value:", data.round);
 
-            const data = await response.json();
-
-            document.getElementById('result').innerText = 
-                `Answer: ${data.solution}`;
+            // Example: updating HTML elements if you have them
+            document.getElementById('raw-result').innerText = "Raw: " + data.raw;
+            document.getElementById('round-result').innerText = "Rounded: " + data.round;
         }
+    } catch (err) {
+        console.error("Error:", err);
+    }
+}
     </script>
 
 </body>

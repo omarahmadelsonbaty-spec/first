@@ -37,15 +37,24 @@ def read_root():
     except FileNotFoundError:
         return "<h3>ERROR: index.html not found in the AI_Startup folder!</h3>"
 
-# 5. The API processing endpoint
 @app.post("/api/evaluate-bid")
 def evaluate_bid(data: AuctionItem):
-    solution = eval(data.answer)
-    
-    cursor.execute("INSERT INTO price VALUES (?)", (solution,))
-    connect.commit()
-    return {
-        "status": "success",
-        "solution": solution
-    }
+    try:
+        # Safely evaluate math expression
+        raw_solution = float(eval(data.answer, {"__builtins__": None}, {}))
+        rounded_solution = round(raw_solution, 2)
+        
+        cursor.execute("INSERT INTO price VALUES (?)", (raw_solution,))
+        connect.commit()
+        
+        return {
+            "status": "success",
+            "raw": raw_solution,
+            "round": rounded_solution
+        }
+    except Exception as e:
+        return {
+            "status": "error",
+            "detail": f"Invalid evaluation: {str(e)}"
+        }
     #python -m uvicorn main:app --reload --port 5500
