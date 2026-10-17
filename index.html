@@ -60,7 +60,8 @@
         <input type="text" id="bid-input" placeholder="Math Expression">
         <button onclick="submitDeal()">Evaluate</button>
         
-        <div id="result"></div>
+        <div id="raw-value"></div>
+        <div id="rounded-value"></div>
     </div>
 
     <script>
@@ -82,8 +83,9 @@ async function submitDeal() {
         alert("Error: " + data.detail);
     } else {
         console.log("Raw:", data.raw, "Round:", data.round);
-        document.getElementById("Raw: " + data.raw );
-        document.getElementById("Rounded: " + data.roun)
+        // Assuming 'data' is an object containing your values
+        document.getElementById("raw-value").innerText = "Raw: " + data.raw;
+        document.getElementById("rounded-value").innerText = "Rounded: " + data.round;
         
     }
 }
