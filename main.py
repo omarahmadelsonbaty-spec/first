@@ -7,16 +7,16 @@ import sqlite3
 connect = sqlite3.connect("u.DB", check_same_thread=False)
 cursor = connect.cursor()
 cursor.execute('''CREATE TABLE IF NOT EXISTS history (
-    e_id INTEGER PRIMARY KEY
-    solution REAL
-    created_at DEFAULT TIMESTAMP
+    e_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    solution REAL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )''')
 connect.commit()
 
 # 2. Initialize FastAPI engine
 app = FastAPI()
 
-# Catch BOTH the root and the explicit file request
+# Serve the HTML interface at the root and index path
 @app.get("/", response_class=HTMLResponse)
 @app.get("/index.html", response_class=HTMLResponse)
 def read_root():
@@ -30,23 +30,15 @@ def read_root():
 class AuctionItem(BaseModel):
     answer: str
 
-# 4. Serve the HTML interface directly at the root address (http://127.0.0.1:5500/)
-@app.get("/", response_class=HTMLResponse)
-def read_root():
-    try:
-        with open("index.html", "r", encoding="utf-8") as f:
-            return f.read()
-    except FileNotFoundError:
-        return "<h3>ERROR: index.html not found in the AI_Startup folder!</h3>"
-
+# 4. Evaluation endpoint with database logging
 @app.post("/api/evaluate-bid")
 def evaluate_bid(data: AuctionItem):
     try:
-        # Safely evaluate math expression
         raw_solution = float(eval(data.answer, {"__builtins__": None}, {}))
         rounded_solution = round(raw_solution, 2)
         
-        cursor.execute("INSERT INTO history VALUES ((?))", (rounded_solution))
+        # Insert into history table, explicitly targeting the solution column
+        cursor.execute("INSERT INTO history (solution) VALUES (?)", (rounded_solution,))
         connect.commit()
         
         return {

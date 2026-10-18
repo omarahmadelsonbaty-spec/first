@@ -3,9 +3,13 @@ import sqlite3
 connect = sqlite3.connect("u.DB")
 cursor = connect.cursor()
 
-cursor.execute("SELECT e_id,solution,created_at FROM history WHERE e_id > 0")
+cursor.execute("SELECT e_id, solution, created_at FROM history WHERE e_id > 0")
 
-rows = cursor.fetchall
+# Added parentheses to execute the fetch function
+rows = cursor.fetchall()
 
 for row in rows:
-    print("|Number: " + row[0] , "\n|Solution: " + row[1] , "\n|Time: " + row[2])
+    # Used f-string formatting to prevent type concatenation errors
+    print(f"|Number: {row[0]}\n|Solution: {row[1]}\n|Time: {row[2]}\n-----------------")
+
+connect.close()
