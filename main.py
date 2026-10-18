@@ -1,12 +1,11 @@
+import ast
+import sqlite3
 from fastapi import FastAPI
 from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
-import sqlite3
 
-# 1. Initialize FastAPI engine
 app = FastAPI()
 
-# Helper function to initialize the DB if it doesn't exist
 def init_db():
     with sqlite3.connect("u.DB") as connect:
         cursor = connect.cursor()
@@ -17,10 +16,8 @@ def init_db():
         )''')
         connect.commit()
 
-# Run initialization on startup
 init_db()
 
-# Serve the HTML interface at the root and index path
 @app.get("/", response_class=HTMLResponse)
 @app.get("/index.html", response_class=HTMLResponse)
 def read_root():
@@ -28,20 +25,41 @@ def read_root():
         with open("index.html", "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
-        return "<h3>ERROR: index.html not found in the AI_Startup folder!</h3>"
+        return "<h3>ERROR: index.html not found!</h3>"
 
-# 3. Pydantic validation contract
 class AuctionItem(BaseModel):
     answer: str
 
-# 4. Evaluation endpoint with thread-safe database logging
+# Safe evaluator using AST
+def safe_eval(expr: str):
+    allowed_operators = {
+        ast.Add: lambda a, b: a + b,
+        ast.Sub: lambda a, b: a - b,
+        ast.Mult: lambda a, b: a * b,
+        ast.Div: lambda a, b: a / b,
+        ast.USub: lambda a: -a,
+        ast.UAdd: lambda a: +a,
+    }
+
+    def _eval(node):
+        if isinstance(node, ast.Constant) and isinstance(node.value, (int, float)):
+            return node.value
+        elif isinstance(node, ast.BinOp) and type(node.op) in allowed_operators:
+            return allowed_operators[type(node.op)](_eval(node.left), _eval(node.right))
+        elif isinstance(node, ast.UnaryOp) and type(node.op) in allowed_operators:
+            return allowed_operators[type(node.op)](_eval(node.operand))
+        else:
+            raise ValueError("Unsupported or unsafe expression")
+
+    node = ast.parse(expr, mode='eval')
+    return _eval(node.body)
+
 @app.post("/api/evaluate-bid")
 def evaluate_bid(data: AuctionItem):
     try:
-        raw_solution = float(eval(data.answer, {"__builtins__": None}, {}))
+        raw_solution = float(safe_eval(data.answer))
         rounded_solution = round(raw_solution, 2)
         
-        # Open a connection specific to THIS thread and request
         with sqlite3.connect("u.DB") as connect:
             cursor = connect.cursor()
             cursor.execute("INSERT INTO history (solution) VALUES (?)", (rounded_solution,))
