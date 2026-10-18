@@ -6,8 +6,10 @@ import sqlite3
 # 1. Initialize SQLite database connection
 connect = sqlite3.connect("u.DB", check_same_thread=False)
 cursor = connect.cursor()
-cursor.execute('''CREATE TABLE IF NOT EXISTS price (
-    profit REAL
+cursor.execute('''CREATE TABLE IF NOT EXISTS history (
+    e_id INTEGER PRIMARY KEY
+    solution REAL
+    created_at DEFAULT TIMESTAMP
 )''')
 connect.commit()
 
@@ -44,7 +46,7 @@ def evaluate_bid(data: AuctionItem):
         raw_solution = float(eval(data.answer, {"__builtins__": None}, {}))
         rounded_solution = round(raw_solution, 2)
         
-        cursor.execute("INSERT INTO price VALUES (?)", (raw_solution,))
+        cursor.execute("INSERT INTO history VALUES ((?))", (rounded_solution))
         connect.commit()
         
         return {
@@ -57,4 +59,3 @@ def evaluate_bid(data: AuctionItem):
             "status": "error",
             "detail": f"Invalid evaluation: {str(e)}"
         }
-    #python -m uvicorn main:app --reload --port 5500
