@@ -7,7 +7,7 @@ import sqlite3
 connect = sqlite3.connect("u.DB", check_same_thread=False)
 cursor = connect.cursor()
 cursor.execute('''CREATE TABLE IF NOT EXISTS history (
-    e_id INTEGER PRIMARY KEY AUTOINCREMENT,
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
     solution REAL,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 )''')
@@ -51,3 +51,6 @@ def evaluate_bid(data: AuctionItem):
             "status": "error",
             "detail": f"Invalid evaluation: {str(e)}"
         }
+        #git add .
+        #git commit -m "Add raw and rounded calculations"
+        #git push origin main
