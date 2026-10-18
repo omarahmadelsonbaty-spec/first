@@ -4,14 +4,14 @@ from pydantic import BaseModel
 import sqlite3
 
 # 1. Initialize SQLite database connection
-connect = sqlite3.connect("u.DB", check_same_thread=False)
-cursor = connect.cursor()
-cursor.execute('''CREATE TABLE IF NOT EXISTS history (
-    id INTEGER PRIMARY KEY AUTOINCREMENT,
-    solution REAL,
-    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-)''')
-connect.commit()
+#connect = sqlite3.connect("u.DB", check_same_thread=False)
+#cursor = connect.cursor()
+#cursor.execute('''CREATE TABLE IF NOT EXISTS history (
+    #id INTEGER PRIMARY KEY AUTOINCREMENT,
+    #solution REAL,
+    #created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+#)''')
+#connect.commit()
 
 # 2. Initialize FastAPI engine
 app = FastAPI()
@@ -38,8 +38,8 @@ def evaluate_bid(data: AuctionItem):
         rounded_solution = round(raw_solution, 2)
         
         # Insert into history table, explicitly targeting the solution column
-        cursor.execute("INSERT INTO history (solution) VALUES (?)", (rounded_solution,))
-        connect.commit()
+        #cursor.execute("INSERT INTO history (solution) VALUES (?)", (rounded_solution,))
+        #connect.commit()
         
         return {
             "status": "success",
