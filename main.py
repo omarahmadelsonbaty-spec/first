@@ -3,8 +3,7 @@ from fastapi.responses import HTMLResponse
 from pydantic import BaseModel
 import sqlite3
 
-# 1. Initialize SQLite database connection
-connect = sqlite3.connect("u.DB", check_same_thread=False)
+connect = sqlite3.connect("u.DB")
 cursor = connect.cursor()
 cursor.execute('''CREATE TABLE IF NOT EXISTS history (
     id INTEGER PRIMARY KEY AUTOINCREMENT,

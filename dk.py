@@ -3,7 +3,7 @@ import sqlite3
 connect = sqlite3.connect("u.DB")
 cursor = connect.cursor()
 
-cursor.execute("SELECT id, solution, created_at FROM history WHERE e_id > 0")
+cursor.execute("SELECT id, solution, created_at FROM history WHERE id > 0")
 
 # Added parentheses to execute the fetch function
 rows = cursor.fetchall()
