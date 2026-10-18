@@ -4,14 +4,14 @@ from pydantic import BaseModel
 import sqlite3
 
 # 1. Initialize SQLite database connection
-#connect = sqlite3.connect("u.DB", check_same_thread=False)
-#cursor = connect.cursor()
-#cursor.execute('''CREATE TABLE IF NOT EXISTS history (
-    #id INTEGER PRIMARY KEY AUTOINCREMENT,
-    #solution REAL,
-    #created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
-#)''')
-#connect.commit()
+connect = sqlite3.connect("u.DB", check_same_thread=False)
+cursor = connect.cursor()
+cursor.execute('''CREATE TABLE IF NOT EXISTS history (
+    id INTEGER PRIMARY KEY AUTOINCREMENT,
+    solution REAL,
+    created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+)''')
+connect.commit()
 
 # 2. Initialize FastAPI engine
 app = FastAPI()
@@ -19,6 +19,7 @@ app = FastAPI()
 # Serve the HTML interface at the root and index path
 @app.get("/", response_class=HTMLResponse)
 @app.get("/index.html", response_class=HTMLResponse)
+
 def read_root():
     try:
         with open("index.html", "r", encoding="utf-8") as f:
@@ -37,9 +38,8 @@ def evaluate_bid(data: AuctionItem):
         raw_solution = float(eval(data.answer, {"__builtins__": None}, {}))
         rounded_solution = round(raw_solution, 2)
         
-        # Insert into history table, explicitly targeting the solution column
-        #cursor.execute("INSERT INTO history (solution) VALUES (?)", (rounded_solution,))
-        #connect.commit()
+        cursor.execute("INSERT INTO history (solution) VALUES (?)", (rounded_solution,))
+        connect.commit()
         
         return {
             "status": "success",
