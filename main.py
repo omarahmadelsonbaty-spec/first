@@ -57,6 +57,6 @@ def evaluate_bid(data: AuctionItem):
             "status": "error",
             "detail": f"Invalid evaluation: {str(e)}"
         }
-        git add .
-        git commit -m "Add raw and rounded calculations"
-        git push origin main
+        #git add .
+        #git commit -m "Add raw and rounded calculations"
+        #git push origin main
